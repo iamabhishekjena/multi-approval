@@ -39,7 +39,7 @@ public class UserService {
     public ResponseEntity<String> logIn(String loginId) {
         Optional<Users> existingUser = userRepository.findByLoginId(loginId);
         if (existingUser.isEmpty()) {
-            return ResponseEntity.badRequest().body("User Not Found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         Users user = existingUser.get();
         if ("Y".equals(user.getLoginStatus())) {
@@ -53,7 +53,7 @@ public class UserService {
     public ResponseEntity<String> logOut(String loginId) {
         Optional<Users> existingUser = userRepository.findByLoginId(loginId);
         if (existingUser.isEmpty()) {
-            return ResponseEntity.badRequest().body("User Not Found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         Users user = existingUser.get();
         if ("N".equals(user.getLoginStatus())) {

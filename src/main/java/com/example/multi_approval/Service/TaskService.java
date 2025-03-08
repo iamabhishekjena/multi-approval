@@ -46,7 +46,7 @@ public class TaskService {
     public ResponseEntity<String> createTask(TaskRequestDto taskDto) {
         int userId = userService.getUseridByLoginId(taskDto.getLoginId());
         if(userId==-1){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         if (!userService.checkUserLoginStatus(userId)) {
@@ -61,7 +61,7 @@ public class TaskService {
         for (String approverLoginId : taskDto.getApproverLoginIds()) {
             Users users = userService.getUserByLoginId(approverLoginId);
             if (users==null){
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
             TaskApprovals taskApproval = new TaskApprovals();
             taskApproval.setTaskId(task.getTaskId());
@@ -72,7 +72,7 @@ public class TaskService {
             emailService.sendTaskAssignmentEmail(users.getEmailId(), task.getTaskId());
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Task created and assigned successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Task created and assigned successfully with task Id: "+ task.getTaskId());
     }
 
 
@@ -80,7 +80,7 @@ public class TaskService {
     public ResponseEntity<String> approveTask(int taskId,String loginId) {
         int userId = userService.getUseridByLoginId(loginId);
         if(userId==-1){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         Optional<TaskApprovals> taskApprovalOpt = taskApprovalsRepository.findByTaskIdAndApproverId(taskId, userId);
         if (!taskApprovalOpt.isPresent()) {
@@ -112,7 +112,7 @@ public class TaskService {
     public ResponseEntity<String> addComment(int taskId, String loginId, String commentText) {
         int userId = userService.getUseridByLoginId(loginId);
         if(userId==-1){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         if (!userService.checkUserLoginStatus(userId)) {
